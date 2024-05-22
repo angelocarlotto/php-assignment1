@@ -43,3 +43,8 @@ p,a,li,figcaption,th,td,label,input{
   background-color: rgba(94, 193, 140, 0.7);
   margin: px 0px;
 }
+
+.table td{
+
+  font-size: small;
+}
