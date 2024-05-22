@@ -10,7 +10,7 @@ p,a,li,figcaption,th,td,label,input{
   width: auto;
 }
 .masthead{
-  height: 20vh;
+  height: 5vh;
   width: 100%;
   background-image: url('../img/sample-image.jpg');
   background-size: cover;

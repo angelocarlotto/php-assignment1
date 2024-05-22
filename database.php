@@ -22,9 +22,10 @@ class Database
     {
         $sql = "INSERT into tasks(title,employee_id_creation,employee_id_assigned,start_date, end_date,task_status_id, description) values('$title',$employee_id_creation,$employee_id_assigned,'$start_date','$end_date',$task_status_id,'$description')";
         if ($this->connection->exec($sql)) {
-            return true;
+            $id = $this->connection->lastInsertId();
+            return $id;
         }
-        return false;
+        return -1;
     }
 
     public function updateTask($task_id,$title,$employee_id_creation, $employee_id_assigned, $start_date, $end_date,$task_status_id,$description,$solution)
@@ -41,9 +42,9 @@ class Database
         where task_id=$task_id ";
 
         if ($this->connection->exec($sql)) {
-            return true;
+            return $task_id;
         }
-        return false;
+        return -1;
     }
 
 
