@@ -4,7 +4,7 @@ class Database
 {
 
     private $connection;
-    private $password = "";
+    private $password = "123456";
     private $username = "root";
 
     private $dsn = "mysql:host=localhost;dbname=worklogdb";

@@ -1,39 +1,6 @@
 <?php
-require_once("database.php");
-$database = new Database();
-$succesullAdded = -1;
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-	$title = $_POST["title"];
-	$employee_id_creation = $_POST["employee_id_creation"];
-	$employee_id_assigned = $_POST["employee_id_assigned"];
-	$start_date = $_POST["start_date"];
-	$end_date = $_POST["end_date"];
-	$task_status_id = $_POST["task_status_id"];
-	$description = $_POST["description"];
 
 
-	if (array_key_exists("task_id", $_GET)) {
-		$task_id = $_POST["task_id"];
-		$solution = $_POST["solution"];
-		$succesullAdded = $database->updateTask($task_id, $title, $employee_id_creation, $employee_id_assigned, $start_date, $end_date, $task_status_id, $description, $solution);
-	} else {
-		$succesullAdded = $database->createTask($title, $employee_id_creation, $employee_id_assigned, $start_date, $end_date, $task_status_id, $description);
-
-		header("HTTP/1.1 301 Moved Permanently");
-		header("Location: index.php?task_id=$succesullAdded");
-		exit();
-	}
-}
-
-
-$employees = $database->getEmployees();
-$taskStatus = $database->getStatus();
-$taskToUpdate = null;
-if (array_key_exists("task_id", $_GET)) {
-
-	$taskToUpdate = $database->getTaskById($_GET["task_id"]);
-}
 ?>
 <!DOCTYPE html>
 <html>
@@ -54,9 +21,6 @@ if (array_key_exists("task_id", $_GET)) {
 </head>
 
 <body>
-
-
-
 	<header>
 		<nav class="navbar navbar-dark bg-primary">
 			<div class="container-fluid">
@@ -86,17 +50,9 @@ if (array_key_exists("task_id", $_GET)) {
 		<section class="form-row row justify-content-center">
 
 			<?php
-			if ($succesullAdded != -1) {
+			include("add.php");
 			?>
-				<div class="form-group submit-message">
-
-					Record successfully inserted/updated
-
-				</div>
-			<?php
-			}
-			?>
-
+			
 			<form method="post" class="form-horizontal col-md-6 col-md-offset-3">
 				<?php
 				if (array_key_exists("task_id", $_GET)) {
@@ -115,7 +71,7 @@ if (array_key_exists("task_id", $_GET)) {
 						</svg>
 						Task Title</label>
 					<div class="col-sm-10">
-						<input required type="text" name="title" class="form-control" id="input1" value="<?php echo $taskToUpdate != null ? $taskToUpdate["title"] : "" ?>">
+						<input required type="text" name="title" class="form-control" id="input1" value="<?php echo array_key_exists("title", $_POST) ? $title : ($taskToUpdate != null ? $taskToUpdate["title"] : "") ?>">
 					</div>
 				</div>
 				<div class="form-group">
@@ -126,10 +82,10 @@ if (array_key_exists("task_id", $_GET)) {
 
 						Creator</label>
 					<div class="col-sm-10">
-						<select name="employee_id_creation" class="form-select" required="required">
+						<select name="employee_id_creation" class="form-select"  required="required">
 							<option value="">Who is creating this task:</option>
 							<?php foreach ($employees as $row) { ?>
-								<option value="<?php echo $row['employee_id'] ?>" <?php echo $taskToUpdate != null && $row['employee_id'] == $taskToUpdate["employee_id_creation"] ? "selected" : "" ?>><?php echo $row['full_name'] ?></option>
+								<option value="<?php echo $row['employee_id'] ?>" <?php echo   array_key_exists("employee_id_creation", $_POST) &&  $row['employee_id'] == $_POST["employee_id_creation"] ? "selected" : ($taskToUpdate != null && $row['employee_id'] == $taskToUpdate["employee_id_creation"] ? "selected" : "") ?>><?php echo $row['full_name'] ?></option>
 							<?php } ?>
 						</select>
 					</div>
@@ -144,10 +100,10 @@ if (array_key_exists("task_id", $_GET)) {
 						Doer</label>
 					<div class="col-sm-10">
 
-						<select name="employee_id_assigned" class="form-select" required="required">
+						<select name="employee_id_assigned" class="form-select"  required="required">
 							<option value="">Assigned this task to:</option>
 							<?php foreach ($employees as $row) { ?>
-								<option value="<?php echo $row['employee_id'] ?>" <?php echo $taskToUpdate != null && $row['employee_id'] == $taskToUpdate["employee_id_assigned"] ? "selected" : "" ?>><?php echo $row['full_name'] ?></option>
+								<option value="<?php echo $row['employee_id'] ?>" <?php echo array_key_exists("employee_id_assigned", $_POST) &&  $row['employee_id'] == $_POST["employee_id_assigned"] ? "selected" : ($taskToUpdate != null && $row['employee_id'] == $taskToUpdate["employee_id_assigned"] ? "selected" : "") ?>><?php echo $row['full_name'] ?></option>
 							<?php } ?>
 						</select>
 					</div>
@@ -163,7 +119,7 @@ if (array_key_exists("task_id", $_GET)) {
 
 						Start Date</label>
 					<div class="col-sm-10">
-						<input required type="datetime-local" name="start_date" class="form-control" id="input2" value="<?php echo $taskToUpdate != null ? $taskToUpdate["start_date"] : "" ?>">
+						<input required type="datetime-local" name="start_date" class="form-control" id="input2" value="<?php echo array_key_exists("start_date", $_POST) ? $start_date : ($taskToUpdate != null ? $taskToUpdate["start_date"] : "") ?>">
 					</div>
 				</div>
 				<div class="form-group">
@@ -175,7 +131,7 @@ if (array_key_exists("task_id", $_GET)) {
 
 						End Date</label>
 					<div class="col-sm-10">
-						<input required type="datetime-local" name="end_date" class="form-control" id="input3" value="<?php echo $taskToUpdate != null ? $taskToUpdate["end_date"] : "" ?>">
+						<input required type="datetime-local" name="end_date" class="form-control" id="input3" value="<?php echo  array_key_exists("end_date", $_POST) ? $end_date : ($taskToUpdate != null ? $taskToUpdate["end_date"] : "") ?>">
 					</div>
 				</div>
 
@@ -185,14 +141,12 @@ if (array_key_exists("task_id", $_GET)) {
 						<svg width="16" height="16" fill="currentColor" class="bi bi-cup-hot">
 							<use href="sprintes.svg#bi-cup-hot"></use>
 						</svg>
-
-
 						Status</label>
 					<div class="col-sm-10">
-						<select name="task_status_id" class="form-select" required>
+						<select name="task_status_id" class="form-select"  required="required">
 							<option value="">Select Task status:</option>
 							<?php while ($row = $taskStatus->fetch()) { ?>
-								<option value="<?php echo $row['task_status_id']  ?>" <?php echo $taskToUpdate != null && $row['task_status_id'] == $taskToUpdate["task_status_id"] ? "selected" : "" ?>><?php echo $row['description'] ?></option>
+								<option value="<?php echo $row['task_status_id']  ?>" <?php echo  array_key_exists("task_status_id", $_POST) &&  $row['task_status_id'] == $_POST["task_status_id"] ? "selected" : ($taskToUpdate != null && $row['task_status_id'] == $taskToUpdate["task_status_id"] ? "selected" : "") ?>><?php echo $row['description'] ?></option>
 							<?php } ?>
 						</select>
 					</div>
@@ -201,15 +155,13 @@ if (array_key_exists("task_id", $_GET)) {
 				<div class="form-group">
 					<label for="input3" class="col-sm-4 control-label">
 
-
 						<svg width="16" height="16" fill="currentColor" class="bi bi-list-ol">
 							<use href="sprintes.svg#bi-list-ol"></use>
 						</svg>
 
-
 						Description</label>
 					<div class="col-sm-10">
-						<textarea name="description" required class="form-control" id="input4"><?php echo $taskToUpdate != null ? $taskToUpdate["description"] : "" ?></textarea>
+						<textarea required name="description" class="form-control" id="input4"><?php echo  array_key_exists("description", $_POST) ? $description : ($taskToUpdate != null ? $taskToUpdate["description"] : "") ?></textarea>
 					</div>
 				</div>
 				<?php
@@ -217,28 +169,20 @@ if (array_key_exists("task_id", $_GET)) {
 				?>
 					<div class="form-group">
 						<label for="input3" class="col-sm-2 control-label">
-
-
 							<svg width="16" height="16" fill="currentColor" class="bi bi-card-checklist">
 								<use href="sprintes.svg#bi-card-checklist"></use>
 							</svg>
-
-
-
 							Solution</label>
 						<div class="col-sm-10">
-							<textarea name="solution" class="form-control" id="input4"><?php echo $taskToUpdate != null ? $taskToUpdate["solution"] : "" ?></textarea>
+							<textarea required name="solution" class="form-control" id="input4"><?php echo $taskToUpdate != null ? $taskToUpdate["solution"] : "" ?></textarea>
 						</div>
 					</div>
 				<?php
 				}
 
 				?>
-
-
 				<div class="form-group">
-
-					<input type="submit" class="btn btn-success col-md-2 col-md-offset-10" value="<?php echo array_key_exists("task_id", $_GET) ? "Update" : "Insert" ?>">
+					<input type="submit" name="Submit" value="Add" class="btn btn-success col-md-2 col-md-offset-10" value="<?php echo array_key_exists("task_id", $_GET) ? "Update" : "Insert" ?>">
 				</div>
 			</form>
 
