@@ -22,7 +22,7 @@
 
 <body>
 	<header>
-		<nav class="navbar navbar-dark bg-primary">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="index.php">
 					<svg width="64" height="64" fill="currentColor" class="bi bi-controller">
@@ -82,7 +82,7 @@
 
 						Creator</label>
 					<div class="col-sm-10">
-						<select name="employee_id_creation" class="form-select"  required="required">
+						<select name="employee_id_creation" class="form-select"  >
 							<option value="">Who is creating this task:</option>
 							<?php foreach ($employees as $row) { ?>
 								<option value="<?php echo $row['employee_id'] ?>" <?php echo   array_key_exists("employee_id_creation", $_POST) &&  $row['employee_id'] == $_POST["employee_id_creation"] ? "selected" : ($taskToUpdate != null && $row['employee_id'] == $taskToUpdate["employee_id_creation"] ? "selected" : "") ?>><?php echo $row['full_name'] ?></option>
